@@ -396,7 +396,7 @@ function draw_temperature(id,data) {
                       symbol:'none',  //这句就是去掉点的
                       type:'line',
                       smooth:true,  //这句就是让曲线变平滑的
-                      data:data.admin
+                      data:data.cgc
                   },
                   {
                       name:data.legend[3],
@@ -409,7 +409,7 @@ function draw_temperature(id,data) {
                       symbol:'none',  //这句就是去掉点的
                       type:'line',
                       smooth:true,  //这句就是让曲线变平滑的
-                      data:data.mingdu
+                      data:data.binfeng
                   }
               ]
           };

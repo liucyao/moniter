@@ -3,8 +3,8 @@ include_once 'open-falcon_lib.php';
 
 function get_online()
 {
-  $master = get_data_last_v2('SquidMaster.centos', 'squidonlineclients');
-  $salve = get_data_last_v2('SquidSlave.centos', 'squidonlineclients');
+  $master = get_data_last_point('SquidMaster.centos', 'squidonlineclients');
+  $salve = get_data_last_point('SquidSlave.centos', 'squidonlineclients');
   $online  = $master + $salve;
 
   return $online;
@@ -12,8 +12,8 @@ function get_online()
 
 function get_connects()
 {
-  $master = get_data_last_v2('SquidMaster.centos', 'ss.estab');
-  $salve = get_data_last_v2('SquidSlave.centos', 'ss.estab');
+  $master = get_data_last_point('SquidMaster.centos', 'ss.estab');
+  $salve = get_data_last_point('SquidSlave.centos', 'ss.estab');
   $connects  = $master + $salve;
 
   return $connects;
@@ -21,8 +21,8 @@ function get_connects()
 
 function get_bandwidth()
 {
-  $master = get_data_last_v2('SquidMaster.centos', 'net.if.total.bytes/iface=eth1');
-  $salve = get_data_last_v2('SquidSlave.centos', 'net.if.total.bytes/iface=eth1');
+  $master = get_data_last_point('SquidMaster.centos', 'net.if.total.bytes/iface=eth1');
+  $salve = get_data_last_point('SquidSlave.centos', 'net.if.total.bytes/iface=eth1');
   $connects  = $master + $salve;
 
   return $connects;
@@ -31,19 +31,19 @@ function get_bandwidth()
 $online = get_online();
 $connects = get_connects();
 $bandwidth = get_bandwidth();
-$load_squid = (get_data_last_v2('SquidMaster.centos', 'load.1min') + get_data_last_v2('SquidSlave.centos', 'load.1min'));
-$load_isc = get_data_last_v2('ISC.centos', 'load.1min');
-$load_mysql = (get_data_last_v2('Cacti_DB.centos', 'load.1min') + get_data_last_v2('Mysql.centos', 'load.1min'));
+$load_squid = (get_data_last_point('SquidMaster.centos', 'load.1min') + get_data_last_point('SquidSlave.centos', 'load.1min'));
+$load_isc = get_data_last_point('ISC.centos', 'load.1min');
+$load_mysql = (get_data_last_point('Cacti_DB.centos', 'load.1min') + get_data_last_point('Mysql.centos', 'load.1min'));
 $load = array('load_squid' => $load_squid ,'load_isc' => $load_isc ,'load_mysql' => $load_mysql);
 
-$io_squid = (get_data_last_v2('SquidMaster.centos', 'disk.io.util/device=sda') + get_data_last_v2('SquidSlave.centos', 'disk.io.util/device=sda'));
-$io_isc = get_data_last_v2('ISC.centos', 'disk.io.util/device=sda') ;
-$io_mysql = (get_data_last_v2('Cacti_DB.centos', 'disk.io.util/device=sda') + get_data_last_v2('Mysql.centos', 'disk.io.util/device=sda'));
+$io_squid = (get_data_last_point('SquidMaster.centos', 'disk.io.util/device=sda') + get_data_last_point('SquidSlave.centos', 'disk.io.util/device=sda'));
+$io_isc = get_data_last_point('ISC.centos', 'disk.io.util/device=sda') ;
+$io_mysql = (get_data_last_point('Cacti_DB.centos', 'disk.io.util/device=sda') + get_data_last_point('Mysql.centos', 'disk.io.util/device=sda'));
 $io = array('io_squid' => $io_squid ,'io_isc' => $io_isc ,'io_mysql' => $io_mysql);
 
-$ram_squid = (get_data_last_v2('SquidMaster.centos', 'mem.memused.percent') + get_data_last_v2('SquidSlave.centos', 'mem.memused.percent')) / 2;
-$ram_isc = get_data_last_v2('ISC.centos', 'mem.memused.percent') ;
-$ram_mysql = (get_data_last_v2('Cacti_DB.centos', 'mem.memused.percent') + get_data_last_v2('Mysql.centos', 'mem.memused.percent')) / 2;
+$ram_squid = (get_data_last_point('SquidMaster.centos', 'mem.memused.percent') + get_data_last_point('SquidSlave.centos', 'mem.memused.percent')) / 2;
+$ram_isc = get_data_last_point('ISC.centos', 'mem.memused.percent') ;
+$ram_mysql = (get_data_last_point('Cacti_DB.centos', 'mem.memused.percent') + get_data_last_point('Mysql.centos', 'mem.memused.percent')) / 2;
 $ram = array('ram_squid' => $ram_squid ,'ram_isc' => $ram_isc ,'ram_mysql' => $ram_mysql);
 
 $onlines_master = get_data_history_echarts('SquidMaster.centos', 'squidonlineclients', (time()-3600), time());
@@ -58,6 +58,6 @@ $all_datas = array('load' => $load ,'connects' => $connects, 'bandwidth' => $ban
 echo json_encode($all_datas);
 
 //var_dump($all_datas);
-//var_dump(get_data_last_v2('ISC.centos','load.1min'));
+//var_dump(get_data_last_point('ISC.centos','load.1min'));
 //var_dump(get_data_last('SquidMaster.centos', 'squidonlineclients'));
 //print_r(get_chart_data(get_counter_id('SquidMaster.centos','squidonlineclients')['id'], time() - 3600, time()));

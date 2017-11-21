@@ -4,7 +4,7 @@ include_once 'open-falcon_lib.php';
 //var_dump(get_chart_data(get_counter_id('SquidMaster.centos','squidonlineclients')['id'], time() - 3600, time()));
 //var_dump(get_data_last('SquidMaster.centos', 'squidonlineclients'));
 //var_dump(get_value_range('itRoomEnvironment-admin', 'devtempvalue',time()-360, time()));
-var_dump(get_data_last_v2('SquidMaster.centos', 'net.if.total.bytes/iface=eth1'));
+var_dump(get_data_last_point("itRoomEnvironment", "CGC机房-A-温度"));
 /*
 $curl = curl_init();
 $cookie_jar = tempnam(sys_get_temp_dir(),'cookie');

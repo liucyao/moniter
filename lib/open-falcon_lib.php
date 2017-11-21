@@ -8,7 +8,7 @@ define('ADDR_API', 'http://192.168.99.26:8080');
 function get_data_history_v2($endpoint, $counter, $start, $end)
 {
     $url = ADDR_API.'/api/v1/graph/history';
-    $data = array("step" => 30,
+    $data = array("step" => 60,
                 "start_time"  => $start,
                 "hostnames"   => [$endpoint],
                 "end_time"    => $end,
@@ -32,6 +32,7 @@ function get_data_history_v2($endpoint, $counter, $start, $end)
     return json_decode($content, true);
 }
 
+//通过得到一段最后的数据取出最后一个值做为最后的数据(已作废)
 function get_data_last_v2($endpoint, $counter)
 {
     $data_range = get_data_history_v2($endpoint, $counter, time()-150, time());
@@ -45,6 +46,31 @@ function get_data_last_v2($endpoint, $counter)
     return $last;
 }
 
+//获取最后一次上传的数据
+function get_data_last_point($endpoint, $counter)
+{
+    $url = ADDR_API.'/api/v1/graph/lastpoint';
+    $data = array(
+				array(	"endpoint"	=> $endpoint,
+						"counter"	=> $counter
+          ));
+    $data_string = json_encode($data);
+    $headers = array();
+    $headers[] = 'Apitoken:name=rh.wang;sig=';
+    $headers[] = 'Content-Type:application/json';
+    $headers[] = 'X-Forwarded-For:127.0.0.1';
+    $curl2 = curl_init();
+    curl_setopt($curl2, CURLOPT_URL, $url);
+    curl_setopt($curl2, CURLOPT_POST, true);
+    curl_setopt($curl2, CURLOPT_POSTFIELDS, $data_string);
+    curl_setopt($curl2, CURLOPT_HEADER, false);
+    curl_setopt($curl2, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($curl2, CURLOPT_RETURNTRANSFER, 1);
+    $content = curl_exec($curl2);
+
+    return json_decode($content, true)[0]['value']['value'];
+}
+
 //v0.2版本中读取到数据后拼装成echarts的数据结构
 function get_data_history_echarts($endpoints, $counter, $start, $end)
 {
@@ -52,8 +78,9 @@ function get_data_history_echarts($endpoints, $counter, $start, $end)
     $y = array();
     $datas = get_data_history_v2($endpoints, $counter, $start, $end);
     foreach ($datas[0]['Values'] as $k => $value) {
-        if ($value[1] === null) {
-            $value[1] = '-';
+        if ($value['value'] === null) {
+            $value['value'] = $y[$k-1];//最新的数据有可能会为null所以就取之前不为null的数据存在这里
+            //$value['value'] = "-";
         }
         $y[] = $value['value'];
         $x[] = date('H:i', $value['timestamp']);
